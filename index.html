@@ -2,7 +2,7 @@
 <html lang="pt">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Intermediário - Conectando Fornecedores e Clientes em Angola</title>
     <style>
         :root {
@@ -19,13 +19,15 @@
             margin: 0;
             padding: 0;
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            -webkit-tap-highlight-color: transparent;
+            -webkit-tap-highlight-color: rgba(0,0,0,0);
+            touch-action: manipulation;
         }
 
         body {
             background-color: var(--bg-light);
             color: var(--text-dark);
             padding-bottom: 30px;
+            position: relative;
         }
 
         /* Header */
@@ -39,7 +41,7 @@
             box-shadow: 0 2px 10px rgba(0,0,0,0.15);
             position: sticky;
             top: 0;
-            z-index: 100;
+            z-index: 10;
         }
 
         header h1 {
@@ -61,6 +63,7 @@
             font-weight: bold;
             font-size: 0.8rem;
             cursor: pointer;
+            user-select: none;
         }
 
         .btn-admin {
@@ -68,7 +71,7 @@
             color: white;
         }
 
-        /* Hero / Banner Chamativo */
+        /* Hero */
         .hero {
             background: #FFF;
             padding: 15px;
@@ -99,7 +102,7 @@
             color: #555;
         }
 
-        /* Publicar Produto */
+        /* Form */
         .new-post-container {
             background: white;
             margin: 15px;
@@ -143,6 +146,7 @@
             font-weight: bold;
             font-size: 1rem;
             cursor: pointer;
+            user-select: none;
         }
 
         /* Feed */
@@ -217,7 +221,6 @@
             border-radius: 10px;
         }
 
-        /* Caixa do Contato */
         .contact-box {
             background: #FFF3EB;
             border: 1px dashed var(--primary-orange);
@@ -236,6 +239,7 @@
             cursor: pointer;
             margin-top: 8px;
             width: 100%;
+            user-select: none;
         }
 
         .btn-whatsapp {
@@ -250,7 +254,7 @@
             margin-top: 8px;
         }
 
-        /* Modais (Janelas Sobrepostas) */
+        /* Modals */
         .modal {
             display: none;
             position: fixed;
@@ -261,8 +265,12 @@
             background: rgba(0, 0, 0, 0.6);
             justify-content: center;
             align-items: center;
-            z-index: 200;
+            z-index: 1000;
             padding: 15px;
+        }
+
+        .modal.active {
+            display: flex;
         }
 
         .modal-content {
@@ -274,6 +282,7 @@
             border-radius: 12px;
             padding: 20px;
             position: relative;
+            z-index: 1001;
         }
 
         .close-btn {
@@ -283,6 +292,9 @@
             font-size: 1.6rem;
             cursor: pointer;
             color: #888;
+            background: none;
+            border: none;
+            padding: 5px 10px;
         }
 
         .payment-methods {
@@ -300,6 +312,7 @@
             cursor: pointer;
             font-weight: bold;
             font-size: 0.75rem;
+            user-select: none;
         }
 
         .payment-option.selected {
@@ -331,16 +344,14 @@
 </head>
 <body>
 
-    <!-- Header -->
     <header>
         <h1>Intermediário</h1>
         <div class="header-buttons">
-            <button class="btn-header btn-admin" onclick="openAdminAccess()">Gerente ⚙️</button>
-            <button class="btn-header" onclick="openModal('authModal')">Entrar</button>
+            <button class="btn-header btn-admin" id="btnAdminAccess">Gerente ⚙️</button>
+            <button class="btn-header" id="btnOpenAuth">Entrar</button>
         </div>
     </header>
 
-    <!-- Banner Chamativo -->
     <section class="hero">
         <img src="https://images.unsplash.com/photo-1531384441138-2736e62e0919?auto=format&fit=crop&w=300&q=80" alt="Jovem Africano Empreendedor">
         <div class="hero-text">
@@ -349,10 +360,9 @@
         </div>
     </section>
 
-    <!-- Form para Publicar Novo Produto -->
     <section class="new-post-container">
         <h3>📢 Publicar Produto / Oferta (Fornecedor)</h3>
-        <form id="publishForm" onsubmit="handlePublish(event)">
+        <form id="publishForm">
             <div class="form-group">
                 <input type="text" id="supplierName" placeholder="Seu Nome / Empresa" required>
             </div>
@@ -369,9 +379,7 @@
         </form>
     </section>
 
-    <!-- Feed de Produtos -->
     <main class="feed" id="feedContainer">
-        <!-- Card Exemplo -->
         <article class="card">
             <span class="badge-new">Recente</span>
             <div class="card-header">
@@ -385,22 +393,21 @@
             <div class="card-body">
                 <h3>Lote de Relógios e Acessórios Masculinos</h3>
                 <p>Fornecimento por atacado a partir de 5 unidades. Preços diretos da fábrica. Entrega imediata em Luanda.</p>
-
                 <div class="contact-box" id="contact-box-1">
                     <p style="font-size: 0.85rem; color: #666;">🔒 Número de WhatsApp Oculto</p>
                     <p style="font-weight: bold; margin-top: 4px;">Acesso por <span class="hours-display">5</span> Horas por <span class="price-display">2.000 Kz</span></p>
-                    <button class="btn-unlock" onclick="startUnlockProcess(1, 'Mateus Bernardo', '923111222')">Liberar WhatsApp (Comprovativo)</button>
+                    <button type="button" class="btn-unlock" data-id="1" data-name="Mateus Bernardo" data-phone="923111222">Liberar WhatsApp (Comprovativo)</button>
                 </div>
             </div>
         </article>
     </main>
 
-    <!-- MODAL DE LOGIN / AUTENTICAÇÃO -->
+    <!-- Modal Login -->
     <div class="modal" id="authModal">
         <div class="modal-content">
-            <span class="close-btn" onclick="closeModal('authModal')">&times;</span>
+            <button type="button" class="close-btn" data-close="authModal">&times;</button>
             <h2 style="color: var(--primary-orange); margin-bottom: 15px; text-align: center;">Entrar no Intermediário</h2>
-            <form onsubmit="handleEmailLogin(event)">
+            <form id="authForm">
                 <div class="form-group">
                     <input type="email" placeholder="Seu E-mail" required>
                 </div>
@@ -412,10 +419,10 @@
         </div>
     </div>
 
-    <!-- MODAL DE PAGAMENTO EM KWANZAS (ANGOLA) -->
+    <!-- Modal Pagamento -->
     <div class="modal" id="paymentModal">
         <div class="modal-content">
-            <span class="close-btn" onclick="closeModal('paymentModal')">&times;</span>
+            <button type="button" class="close-btn" data-close="paymentModal">&times;</button>
             <h2 style="color: var(--primary-orange); margin-bottom: 5px;">Liberar Contato</h2>
             <p style="font-size: 0.85rem; color: #555; margin-bottom: 10px;">
                 Acesso por <strong style="color: var(--primary-orange);"><span class="hours-display">5</span> Horas</strong> ao fornecedor: <span id="targetSupplierName" style="font-weight: bold;"></span>.
@@ -424,16 +431,14 @@
 
             <label style="font-weight: bold; font-size: 0.85rem;">Selecione a forma de pagamento:</label>
             <div class="payment-methods">
-                <div class="payment-option selected" id="methodExpress" onclick="selectPayment('Express')">Multicaixa Express</div>
-                <div class="payment-option" id="methodPayPay" onclick="selectPayment('PayPay')">PayPay Angola</div>
-                <div class="payment-option" id="methodPagaPaga" onclick="selectPayment('PagaPaga')">PagaPaga</div>
+                <div class="payment-option selected" data-method="Express">Multicaixa Express</div>
+                <div class="payment-option" data-method="PayPay">PayPay Angola</div>
+                <div class="payment-option" data-method="PagaPaga">PagaPaga</div>
             </div>
 
-            <div class="payment-info" id="paymentDetailsArea">
-                <!-- Preenchido via JavaScript dinamicamente -->
-            </div>
+            <div class="payment-info" id="paymentDetailsArea"></div>
 
-            <form onsubmit="handleProofSubmit(event)">
+            <form id="proofForm">
                 <div class="form-group">
                     <label>Carregar Foto do Comprovativo / Print:</label>
                     <input type="file" id="proofFile" accept="image/*" required>
@@ -443,13 +448,12 @@
         </div>
     </div>
 
-    <!-- PAINEL DO GERENTE (ADMINISTRATIVO) -->
+    <!-- Modal Admin -->
     <div class="modal" id="adminModal">
         <div class="modal-content">
-            <span class="close-btn" onclick="closeModal('adminModal')">&times;</span>
+            <button type="button" class="close-btn" data-close="adminModal">&times;</button>
             <h2 style="color: #222; margin-bottom: 15px; border-bottom: 2px solid var(--primary-orange); padding-bottom: 5px;">Painel de Gerenciamento ⚙️</h2>
 
-            <!-- Configurações de Preço e Tempo -->
             <div class="admin-section">
                 <h4>1. Configurar Taxas e Prazos</h4>
                 <div class="form-group">
@@ -460,10 +464,9 @@
                     <label>Duração do Acesso (em Horas):</label>
                     <input type="number" id="adminHoursInput" value="5">
                 </div>
-                <button type="button" class="btn-submit" onclick="saveAdminSettings()">Atualizar Preços e Horas</button>
+                <button type="button" class="btn-submit" id="btnSaveAdminSettings">Atualizar Preços e Horas</button>
             </div>
 
-            <!-- Dados de Pagamento dos Aplicativos de Angola -->
             <div class="admin-section">
                 <h4>2. Dados de Contas de Recebimento</h4>
                 <div class="form-group">
@@ -478,83 +481,96 @@
                     <label>Número/ID PagaPaga:</label>
                     <input type="text" id="adminPagaPagaInput" value="923000000">
                 </div>
-                <button type="button" class="btn-submit" onclick="saveAccountDetails()" style="background: #333;">Atualizar Contas de Pagamento</button>
+                <button type="button" class="btn-submit" id="btnSaveAccountDetails" style="background: #333;">Atualizar Contas de Pagamento</button>
             </div>
         </div>
     </div>
 
-    <!-- JAVASCRIPT / LÓGICA DO PAINEL E PAGAMENTOS -->
     <script>
-        // Configurações Padrão de Gerente
-        const ADMIN_CODE = "INTERMEDIARIO2026"; // <--- CÓDIGO DE ACESSO DO GERENTE
-        
-        let appConfig = {
-            priceKz: "2.000 Kz",
-            accessHours: "5",
-            expressData: "923 000 000",
-            paypayData: "923 000 000",
-            pagapagaData: "923 000 000"
-        };
+        document.addEventListener('DOMContentLoaded', () => {
+            const ADMIN_CODE = "INTERMEDIARIO2026"; 
+            
+            let appConfig = {
+                priceKz: "2.000 Kz",
+                accessHours: "5",
+                expressData: "923 000 000",
+                paypayData: "923 000 000",
+                pagapagaData: "923 000 000"
+            };
 
-        let currentPost = null;
-        let selectedMethod = 'Express';
+            let currentPost = null;
+            let selectedMethod = 'Express';
 
-        // Atualizar textos do app conforme configurações
-        function updateAppDisplay() {
-            document.querySelectorAll('.price-display').forEach(el => el.innerText = appConfig.priceKz);
-            document.querySelectorAll('.hours-display').forEach(el => el.innerText = appConfig.accessHours);
-            renderPaymentDetails();
-        }
-
-        // Renderizar detalhes do método de pagamento
-        function renderPaymentDetails() {
-            const area = document.getElementById('paymentDetailsArea');
-            if (selectedMethod === 'Express') {
-                area.innerHTML = `<p><strong>MULTICAIXA EXPRESS:</strong></p><p style="font-size:1.1rem; font-weight:bold; color:var(--primary-orange);">${appConfig.expressData}</p><p style="font-size:0.75rem; color:#666;">Enviar pagamento e anexar o comprovativo abaixo.</p>`;
-            } else if (selectedMethod === 'PayPay') {
-                area.innerHTML = `<p><strong>PAYPAY ANGOLA:</strong></p><p style="font-size:1.1rem; font-weight:bold; color:var(--primary-orange);">${appConfig.paypayData}</p><p style="font-size:0.75rem; color:#666;">Faça a transferência no aplicativo PayPay Angola.</p>`;
-            } else if (selectedMethod === 'PagaPaga') {
-                area.innerHTML = `<p><strong>PAGAPAGA:</strong></p><p style="font-size:1.1rem; font-weight:bold; color:var(--primary-orange);">${appConfig.pagapagaData}</p><p style="font-size:0.75rem; color:#666;">Efetue o pagamento no aplicativo PagaPaga.</p>`;
+            function openModal(id) {
+                const target = document.getElementById(id);
+                if (target) target.classList.add('active');
             }
-        }
 
-        // Troca de métodos de pagamento
-        function selectPayment(method) {
-            selectedMethod = method;
-            document.getElementById('methodExpress').classList.toggle('selected', method === 'Express');
-            document.getElementById('methodPayPay').classList.toggle('selected', method === 'PayPay');
-            document.getElementById('methodPagaPaga').classList.toggle('selected', method === 'PagaPaga');
-            renderPaymentDetails();
-        }
-
-        // Modais sem travar
-        function openModal(id) { document.getElementById(id).style.display = 'flex'; }
-        function closeModal(id) { document.getElementById(id).style.display = 'none'; }
-
-        // Acesso ao Painel do Gerente
-        function openAdminAccess() {
-            const inputCode = prompt("Digite o Código de Acesso do Gerente:");
-            if (inputCode === ADMIN_CODE) {
-                openModal('adminModal');
-            } else if (inputCode !== null) {
-                alert("Código incorreto! Acesso negado ao Painel de Gerente.");
+            function closeModal(id) {
+                const target = document.getElementById(id);
+                if (target) target.classList.remove('active');
             }
-        }
 
-        // Salvar configurações no Painel
-        function saveAdminSettings() {
-            const price = document.getElementById('adminPriceInput').value;
-            const hours = document.getElementById('adminHoursInput').value;
-            appConfig.priceKz = parseInt(price).toLocaleString('pt-AO') + " Kz";
-            appConfig.accessHours = hours;
-            updateAppDisplay();
-            alert("Preço e Tempo de Acesso atualizados com sucesso!");
-            closeModal('adminModal');
-        }
+            function renderPaymentDetails() {
+                const area = document.getElementById('paymentDetailsArea');
+                if (!area) return;
+                
+                if (selectedMethod === 'Express') {
+                    area.innerHTML = `<p><strong>MULTICAIXA EXPRESS:</strong></p><p style="font-size:1.1rem; font-weight:bold; color:var(--primary-orange);">${appConfig.expressData}</p><p style="font-size:0.75rem; color:#666;">Enviar pagamento e anexar o comprovativo abaixo.</p>`;
+                } else if (selectedMethod === 'PayPay') {
+                    area.innerHTML = `<p><strong>PAYPAY ANGOLA:</strong></p><p style="font-size:1.1rem; font-weight:bold; color:var(--primary-orange);">${appConfig.paypayData}</p><p style="font-size:0.75rem; color:#666;">Faça a transferência no aplicativo PayPay Angola.</p>`;
+                } else if (selectedMethod === 'PagaPaga') {
+                    area.innerHTML = `<p><strong>PAGAPAGA:</strong></p><p style="font-size:1.1rem; font-weight:bold; color:var(--primary-orange);">${appConfig.pagapagaData}</p><p style="font-size:0.75rem; color:#666;">Efetue o pagamento no aplicativo PagaPaga.</p>`;
+                }
+            }
 
-        function saveAccountDetails() {
-            appConfig.expressData = document.getElementById('adminExpressInput').value;
-            appConfig.paypayData = document.getElementById('adminPayPayInput').value;
-            appConfig.pagapagaData = document.getElementById('adminPagaPagaInput').value;
-            renderPaymentDetails();
-            alert("Dados de pagamento atu
+            function updateAppDisplay() {
+                document.querySelectorAll('.price-display').forEach(el => el.innerText = appConfig.priceKz);
+                document.querySelectorAll('.hours-display').forEach(el => el.innerText = appConfig.accessHours);
+                renderPaymentDetails();
+            }
+
+            // Global Click Delegation
+            document.addEventListener('click', (e) => {
+                const target = e.target;
+
+                // Close modal buttons
+                if (target.matches('[data-close]')) {
+                    closeModal(target.getAttribute('data-close'));
+                    return;
+                }
+
+                // Modal backdrop click
+                if (target.classList.contains('modal')) {
+                    target.classList.remove('active');
+                    return;
+                }
+
+                // Unlock WhatsApp trigger
+                if (target.classList.contains('btn-unlock')) {
+                    const id = target.getAttribute('data-id');
+                    const name = target.getAttribute('data-name');
+                    const phone = target.getAttribute('data-phone');
+                    currentPost = { id, phone };
+                    document.getElementById('targetSupplierName').innerText = name;
+                    openModal('paymentModal');
+                    return;
+                }
+
+                // Payment method switch
+                if (target.classList.contains('payment-option')) {
+                    document.querySelectorAll('.payment-option').forEach(el => el.classList.remove('selected'));
+                    target.classList.add('selected');
+                    selectedMethod = target.getAttribute('data-method');
+                    renderPaymentDetails();
+                    return;
+                }
+            });
+
+            // Specific Event Listeners
+            document.getElementById('btnAdminAccess').addEventListener('click', () => {
+                const inputCode = prompt("Digite o Código de Acesso do Gerente:");
+                if (inputCode === ADMIN_CODE) {
+                    openModal('adminModal');
+                } else if (inputCode !== null) {
+                   
